@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -14,11 +15,18 @@ func TestHandler(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(handler)
+	// Add Basic Auth header
+	req.Header.Add("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte("yourUsername:yourPassword")))
 
+	rr := httptest.NewRecorder()
+
+	// Wrap your handler function with the rate limiter
+	handler := http.HandlerFunc(rateLimit(handler))
+
+	// Call ServeHTTP method directly since we're not running a full server
 	handler.ServeHTTP(rr, req)
 
+	// Check the status code is what we expect
 	if status := rr.Code; status != http.StatusOK {
 		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
 	}
