@@ -1,5 +1,7 @@
+# syntax=docker/dockerfile:1
+
 # Start from the official Go image
-FROM golang:1.20-alpine
+FROM golang:1.17-alpine
 
 # Set the working directory inside the container
 WORKDIR /app

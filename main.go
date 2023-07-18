@@ -1,66 +1,40 @@
 package main
 
 import (
-	"fmt"
+	"encoding/json"
 	"log"
 	"net/http"
-	"os"
-	"server/handlers"
+	"time"
 
 	"golang.org/x/time/rate"
 )
 
-// Create a rate limiter with a rate of 100 requests per minute
-var (
-	limiter = rate.NewLimiter(rate.Limit(100), 1)
-	// apiKey  = "48b111a7-e77a-44c1-9554-10b485867ac1" // Replace with your desired API key
-)
+type Response struct {
+	Message   string `json:"message"`
+	Timestamp int64  `json:"timestamp"`
+}
+
+var limiter = rate.NewLimiter(1, 3) // Limit to 1 request per second with a burst capacity of 3
 
 func main() {
-	http.HandleFunc("/api", secureMiddleware(rateLimitMiddleware(handlers.HandleAPI)))
-	fmt.Println("Server listening on port 8080")
-
-	// Read the SSL certificate and private key from GitHub Secrets
-	certFile := os.Getenv("SERVER_CERT")
-	keyFile := os.Getenv("SERVER_KEY")
-	err := http.ListenAndServeTLS(":8080", certFile, keyFile, nil)
-	// err := http.ListenAndServeTLS(":8080", "server.crt", "server.key", nil)
-	if err != nil {
-		log.Fatal(err)
-	}
+	http.HandleFunc("/", rateLimit(handler))
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-func secureMiddleware(next http.HandlerFunc) http.HandlerFunc {
+func rateLimit(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Enforce HTTPS redirection
-		if r.TLS == nil {
-			http.Redirect(w, r, "https://"+r.Host+r.RequestURI, http.StatusPermanentRedirect)
-			return
-		}
-
-		// Check for API key in the request header or query parameter
-		apiKey := r.Header.Get("X-API-Key")
-		if apiKey == "" {
-			apiKey = r.URL.Query().Get("api_key")
-		}
-
-		// Validate the API key
-		if apiKey != os.Getenv("API_KEY") {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			return
-		}
-
-		next.ServeHTTP(w, r)
-	}
-}
-
-func rateLimitMiddleware(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// Check if the rate limiter allows the request
 		if !limiter.Allow() {
-			http.Error(w, "Rate Limit Exceeded", http.StatusTooManyRequests)
+			http.Error(w, http.StatusText(http.StatusTooManyRequests), http.StatusTooManyRequests)
 			return
 		}
 		next.ServeHTTP(w, r)
 	}
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Received request from %s", r.RemoteAddr)
+	json.NewEncoder(w).Encode(Response{
+		Message:   "Automate all the things!",
+		Timestamp: time.Now().Unix(),
+	})
 }
