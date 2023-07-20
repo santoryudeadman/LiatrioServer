@@ -31,7 +31,7 @@ jobs:
         run: go vet ./...
 
       - name: Testing
-        run: go test ./tests
+        run: go test 
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v4
