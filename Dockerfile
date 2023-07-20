@@ -13,23 +13,17 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 # Copy the source code into the container
-COPY . .
+COPY *.go ./
 
 # Access the build arguments as environment variables
-ARG API_KEY
-ARG SERVER_CERT
-ARG SERVER_KEY
+
 
 # Set environment variables, if required
-ENV API_KEY=$API_KEY
-ENV SERVER_CERT=$SERVER_CERT
-ENV SERVER_KEY=$SERVER_KEY
-
 # Build the Go application
-RUN go build -o app
+RUN go build -o /LiatrioServer
 
 # Expose the port your application listens on
 EXPOSE 8080
 
 # Run the Go application
-CMD ["./app"]
+CMD ["/LiatrioServer"]
