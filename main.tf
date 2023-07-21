@@ -8,7 +8,7 @@ provider "aws" {
 data "aws_availability_zones" "available" {}
 
 locals {
-  cluster_name = "liatrio-eks-${random_string.suffix.result}"
+  cluster_name = "liatrio-eks-test"
 }
 
 resource "random_string" "suffix" {
