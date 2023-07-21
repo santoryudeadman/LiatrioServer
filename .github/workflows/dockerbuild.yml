@@ -2,9 +2,10 @@
 name: Docker Build/Publish
 
 on:
-  push:
-    branches:
-      - 'main'
+  workflow_run:
+    workflows: ["Go Code"]
+    types:
+      - completed
 
 jobs:
   docker:
@@ -24,5 +25,5 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
-          tags: raviteja0628/liatrioserver:latest
+          tags: raviteja0628/liatrioserver:1.0.0
 
