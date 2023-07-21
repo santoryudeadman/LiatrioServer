@@ -17,7 +17,7 @@ type Response struct {
 var limiter = rate.NewLimiter(1, 3) // Limit to 1 request per second with a burst capacity of 3
 
 func main() {
-	http.HandleFunc("/", rateLimit(handler))
+	http.HandleFunc("/API", rateLimit(handler))
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 

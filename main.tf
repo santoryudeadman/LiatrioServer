@@ -66,7 +66,7 @@ module "eks" {
       instance_types = ["t2.micro"]
 
       min_size     = 1
-      max_size     = 3
+      max_size     = 5
       desired_size = 2
     }
 
@@ -76,8 +76,8 @@ module "eks" {
       instance_types = ["t2.micro"]
 
       min_size     = 1
-      max_size     = 2
-      desired_size = 1
+      max_size     = 5
+      desired_size = 2
     }
   }
 }
