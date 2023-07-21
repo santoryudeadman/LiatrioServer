@@ -4,12 +4,12 @@
 
 terraform {
 
-  # cloud {
-  #   organization = "liatriotestravi"
-  #   workspaces {
-  #     name = "liatriotestravi"
-  #   }
-  # }
+  cloud {
+    organization = "liatriotestravi"
+    workspaces {
+      name = "liatriotestravi"
+    }
+  }
 
   required_providers {
     aws = {
