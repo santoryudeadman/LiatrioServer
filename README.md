@@ -74,4 +74,4 @@ After the Terraform workflow successfully completes on GitHub Actions, the Kuber
 - User will need a setup AWS account with enabled Access keys for the variables
 - Terraform Cloud account to manage state files and more
 - DockerHub account to hande docker images
-
+- Setup Github Account 
